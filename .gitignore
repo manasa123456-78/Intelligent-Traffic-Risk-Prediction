@@ -1,1 +1,24 @@
+# Python
+__pycache__/
+*.py[cod]
+*venv/
+.env
 
+# Data & Video
+*.mp4
+*.avi
+*.mkv
+data/raw/
+*.pt
+*.pth
+*.weights
+
+# IDE
+.vscode/
+.idea/
+*.ipynb_checkpoints/
+
+# Generated heavy data (Users will generate these locally)
+outputs/13_graph.pt
+outputs/14_graph_dataset_labelled.pt
+outputs/reports/*.json
