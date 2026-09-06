@@ -95,3 +95,11 @@ def apply_pinn_smoothing(df_raw, output_csv=SMOOTHED_CSV):
     safe_to_csv(df_smooth, output_csv, index=False)
     print(f"Smoothed tracks using PINN saved. Total unique tracks: {df_smooth['track_id'].nunique()}")
     return df_smooth
+
+if __name__ == '__main__':
+    from trajectory import load_trajectories
+    from config import TRAJECTORY_CSV, SMOOTHED_CSV
+
+    print("Loading raw trajectories for PINN smoothing...")
+    df_raw = load_trajectories(TRAJECTORY_CSV)
+    apply_pinn_smoothing(df_raw, output_csv=SMOOTHED_CSV)
