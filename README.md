@@ -54,3 +54,56 @@ Tested on 5 minutes (5,996 frames) of heterogeneous unsignalized roundabout traf
    ```bash
    git clone [https://github.com/yourusername/Intelligent-Traffic-Risk-Prediction.git](https://github.com/yourusername/Intelligent-Traffic-Risk-Prediction.git)
    cd Intelligent-Traffic-Risk-Prediction
+
+2. **Create a virtual environment:**
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows use `venv\Scripts\activate`
+   ```
+
+3. **Install dependencies:**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. **Setup Ollama (For LLM Explainability):**
+   * Download and install Ollama.
+   * Pull the Llama 3 model: 
+     ```bash
+     ollama run llama3:8b
+     ```
+
+## 💻 Reproducing Results
+
+The pipeline is entirely modular. You can execute the full flow sequentially using the master script:
+
+```bash
+python run_pipeline.py
+```
+
+**Step-by-Step Execution:**
+* `src/perception/detector.py`: Extracts YOLO detections and ByteTrack IDs.
+* `src/perception/homography.py`: Maps pixel coordinates to BEV metric space.
+* `src/graph/trajectories_smoothing_09_11.py`: Applies PINN kinematic smoothing.
+* `src/graph/GraphBuilder_13.py`: Generates the 20-D/27-D dynamic graphs.
+* `src/model/Ground_labels_truth_14.py`: Calculates future exponential risk targets.
+* `src/model/trainer.py`: Trains the ST-GNN architecture.
+* `src/evaluation/evaluate_visualize_llm.py`: Evaluates thresholds, generates ROC curves, and triggers the LLM JSON reports.
+
+## 📄 Academic Paper & Citation
+
+The complete academic manuscript detailing the mathematics, network architecture, and ablation studies is available in `docs/Final_Research_Manuscript.docx`.
+
+If you use this code or methodology in your research, please cite:
+
+```bibtex
+@article{karri2026edge,
+  title={An Edge-Deployable Spatio-Temporal Graph Transformer Framework for Continuous Multi-Agent Traffic Conflict Prediction and Explainable LLM-Driven Safety Diagnostics},
+  author={Karri, Manasa Indu Sri},
+  institution={Indian Institute of Technology Kharagpur},
+  year={2026}
+}
+```
+
+## ⚖️ License
+This project is licensed under the MIT License - see the LICENSE file for details.
