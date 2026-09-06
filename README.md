@@ -26,9 +26,6 @@ To resolve the "black-box" interpretability bottleneck of deep learning, the fra
 * **AI Predictor (ST-GNN):** 2-layer Graph Transformer (Spatial) + 4-Block Dilated 1D TCN (Temporal) $\rightarrow$ Dual-Head Multi-Task Regression.
 * **Explainability (XAI):** Threshold-triggered Ollama/Llama-3 LLM diagnostic generation.
 
-<p align="center">
-  <img src="outputs/plots/Fig4_LLM_Dashboard.png" width="800" alt="LLM XAI Dashboard">
-</p>
 
 ## Experimental Results
 
@@ -73,7 +70,7 @@ Tested on 5 minutes (5,996 frames) of heterogeneous unsignalized roundabout traf
      ollama run llama3:8b
      ```
 
-## 💻 Reproducing Results
+## Reproducing Results
 
 The pipeline is entirely modular. You can execute the full flow sequentially using the master script:
 
@@ -90,9 +87,9 @@ python run_pipeline.py
 * `src/model/trainer.py`: Trains the ST-GNN architecture.
 * `src/evaluation/evaluate_visualize_llm.py`: Evaluates thresholds, generates ROC curves, and triggers the LLM JSON reports.
 
-## 📄 Academic Paper & Citation
+## Academic Paper & Citation
 
-The complete academic manuscript detailing the mathematics, network architecture, and ablation studies is available in `docs/Final_Research_Manuscript.docx`.
+The complete academic manuscript detailing the mathematics, network architecture, and ablation studies is available in `papers/Research_paper_1.pdf`.
 
 If you use this code or methodology in your research, please cite:
 
@@ -105,5 +102,5 @@ If you use this code or methodology in your research, please cite:
 }
 ```
 
-## ⚖️ License
+## License
 This project is licensed under the MIT License - see the LICENSE file for details.
