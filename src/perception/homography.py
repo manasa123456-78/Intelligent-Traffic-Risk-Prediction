@@ -2,43 +2,41 @@ import os
 import cv2
 import numpy as np
 from tqdm import tqdm
+from config import SCALE, CANVAS_WIDTH, CANVAS_HEIGHT, H_NPY_PATH
 
-H_OUT = np.load('H_out_v3.npy')
-out_width, out_height = 502, 1420   # canvas size H_OUT was built for
+def load_homography_matrix(path=H_NPY_PATH):
+    if not os.path.exists(path):
+        raise FileNotFoundError(f"Homography matrix file not found at '{path}'.")
+    return np.load(path)
 
-ISLAND_RADIUS_PX = 100.15
-ISLAND_RADIUS_M  = 7.0   # real-world radius of the roundabout island, in metres (given by user)
-
-if ISLAND_RADIUS_M is None:
-    raise ValueError(
-        "ISLAND_RADIUS_M is not set (Phase 2, run.py). Measure or obtain the "
-        "real-world radius (metres) of the newest_video.avi roundabout island "
-        "and set it above before running the pipeline -- every downstream "
-        "distance/safety metric depends on this scale factor."
-    )
-
-SCALE = ISLAND_RADIUS_PX / ISLAND_RADIUS_M   # pixels per metre in the H_OUT canvas
-
-H_viewport = H_OUT
-
-def pixel_to_world_viewport(px, py, H=H_viewport):
+def pixel_to_world_viewport(px, py, H, scale=SCALE):
+    """Converts image pixel coordinates into metric world coordinates using homography."""
     pt = np.array([[[px, py]]], dtype=np.float32)
     wpt = cv2.perspectiveTransform(pt, H)
-    wx = float(wpt[0, 0, 0]) / SCALE
-    wy = float(wpt[0, 0, 1]) / SCALE
+    wx = float(wpt[0, 0, 0]) / scale
+    wy = float(wpt[0, 0, 1]) / scale
     return wx, wy
 
-# BEV Homography Video Generation
-if not os.path.exists(WARPED_VIDEO_PATH):
-    cap = cv2.VideoCapture(VIDEO_PATH)
+def generate_bev_video(video_path, warped_output_path, H, width=CANVAS_WIDTH, height=CANVAS_HEIGHT):
+    """Warps source video into Bird's Eye View canvas."""
+    print("--- Generating Full BEV Homography Video ---")
+    if os.path.exists(warped_output_path):
+        print(f"Found existing warped video at '{warped_output_path}'. Skipping generation.")
+        return
+
+    cap = cv2.VideoCapture(video_path)
     fps = cap.get(cv2.CAP_PROP_FPS)
     total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-    out_warp = cv2.VideoWriter(WARPED_VIDEO_PATH, fourcc, fps, (out_width, out_height))
+    out_warp = cv2.VideoWriter(warped_output_path, fourcc, fps, (width, height))
+    
     for _ in tqdm(range(total_frames), desc="Warping Video"):
         ret, frame = cap.read()
-        if not ret: break
-        warped_frame = cv2.warpPerspective(frame, H_viewport, (out_width, out_height))
+        if not ret: 
+            break
+        warped_frame = cv2.warpPerspective(frame, H, (width, height))
         out_warp.write(warped_frame)
+        
     cap.release()
     out_warp.release()
+    print(f"Warped video saved to '{warped_output_path}'")
