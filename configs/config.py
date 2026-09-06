@@ -1,22 +1,38 @@
+import os
+import cv2
 import numpy as np
+import pandas as pd
+import torch
+import torch.nn as nn
+from ultralytics import YOLO
+import supervision as sv
+from tqdm import tqdm
 
-# Phase 1: Configuration Parameters
+def safe_to_csv(df, filepath, index=False):
+    dirname = os.path.dirname(os.path.abspath(filepath))
+    if dirname and not os.path.exists(dirname):
+        os.makedirs(dirname, exist_ok=True)
+    df.to_csv(filepath, index=index)
+
+# -----------------------------------------------------------------------------
+# 1. CONFIGURATION PARAMETERS
+# -----------------------------------------------------------------------------
 RUN_YOLO_TRACKING = True
 
-VIDEO_PATH        = 'newest_video_busy_5min.mp4'   # busiest 5-min window (17:00-22:00) extracted from newest_video.avi
+VIDEO_PATH        = 'newest_video_busy_5min.mp4'   
 WARPED_VIDEO_PATH = 'newest_video_bev_full.mp4'
 OUTPUT_VIDEO      = 'tracked_output_newest.mp4'
 TRAJECTORY_CSV    = 'trajectories_newest.csv'
 SMOOTHED_CSV      = 'smoothed_trajectories_newest.csv'
 
-YOLO_MODEL  = '../yolov8x.pt'   # reuse existing weights instead of re-downloading into this folder
+YOLO_MODEL  = '../yolov8x.pt'   
 CONF_THRESH = 0.30
 
-DT               = 0.25    
-PROXIMITY_M      = 15.0    
-MIN_OVERLAP      = 4       
-MIN_OVERLAP_SECONDS = 0.5   # true minimum shared-observation duration required
-NM_BAND_FRACTION = 0.25    
+DT                  = 0.25    
+PROXIMITY_M         = 15.0    
+MIN_OVERLAP         = 4       
+MIN_OVERLAP_SECONDS = 0.5   
+NM_BAND_FRACTION    = 0.25    
 
 VEHICLE_DIMS = {
     'pedestrian':    (0.5,  0.5),
